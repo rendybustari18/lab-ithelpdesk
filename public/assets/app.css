@@ -1,0 +1,5 @@
+body { min-height: 100vh; }
+.auth-wrap { padding-top: min(14vh, 8rem); }
+.auth-card { max-width: 27rem; }
+.table td, .table th { vertical-align: middle; }
+.ticket-description { white-space: pre-wrap; overflow-wrap: anywhere; }

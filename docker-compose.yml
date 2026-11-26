@@ -1,0 +1,39 @@
+services:
+  app:
+    build: .
+    ports:
+      - "${APP_PORT:-8081}:80"
+    environment:
+      CI_ENVIRONMENT: ${CI_ENVIRONMENT:-development}
+      APP_BASE_URL: ${APP_BASE_URL:-http://localhost:8081/}
+      APP_ENCRYPTION_KEY: ${APP_ENCRYPTION_KEY:-training-only-key-change-before-deployment-32bytes}
+      DB_HOST: db
+      DB_NAME: helpdeskhub
+      DB_USER: helpdesk
+      DB_PASSWORD: ${DB_PASSWORD:-training-only-password}
+      DB_PORT: 3306
+    volumes:
+      - uploads:/var/www/html/writable/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: helpdeskhub
+      MYSQL_USER: helpdesk
+      MYSQL_PASSWORD: ${DB_PASSWORD:-training-only-password}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-training-only-root-password}
+    volumes:
+      - database:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+volumes:
+  database:
+  uploads:
